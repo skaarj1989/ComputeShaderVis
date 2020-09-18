@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer app v-model="settingsDrawer" right>
+    <v-navigation-drawer app v-model="settingsDrawer" left>
       <v-list>
         <v-card flat>
           <v-card-title>Dispatch</v-card-title>
@@ -42,7 +42,7 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col class="pt-0 mt-0 text-right">
+              <v-col class="pt-0 mt-0 pb-0 mb-0 text-right">
                 <v-btn
                   color="primary"
                   small
@@ -82,12 +82,41 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col class="pt-0 mt-0 text-right">
+              <v-col cols="8" class="pt-0 mt-0 pb-0 mb-0">
+                <!--
+                <v-slider
+                  dense
+                  v-model.number="desiredPPI"
+                  label="PPI"
+                  hint="pixels per invocation"
+                  persistent-hint
+                  thumb-label
+                  thumb-size="26"
+                  :min="1"
+                  :step="1"
+                ></v-slider>
+                -->
+                <v-text-field
+                  v-model.number="localDesiredPPI"
+                  label="PPI"
+                  hint="pixels per invocation"
+                  outlined
+                  dense
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="pt-0 mt-0 pb-0 mb-0 text-right">
                 <v-btn
                   color="primary"
                   small
                   depressed
-                  @click="$store.dispatch('adjustImage', localImageSize)"
+                  @click="
+                    $store.dispatch('adjustImage', {
+                      imageSize: localImageSize,
+                      desiredPPI: localDesiredPPI,
+                    })
+                  "
                 >
                   adjust
                 </v-btn>
@@ -100,17 +129,18 @@
           <v-card-text>
             <v-row>
               <v-col class="pt-0 mt-0 pb-0 mb-0">
-                <v-radio-group v-model="originUpperLeft" label="Origin">
+                <v-radio-group v-model="originUpperLeft" label="Origin" dense>
                   <v-radio label="Upper-left" :value="true"></v-radio>
                   <v-radio label="Lower-left" :value="false"></v-radio>
                 </v-radio-group>
               </v-col>
             </v-row>
             <v-row>
-              <v-col>
+              <v-col class="pt-0 mt-0 pb-0 mb-0">
                 <v-radio-group
                   v-model="selectedShadingLang"
                   label="Shading language"
+                  dense
                 >
                   <v-radio label="GLSL" value="glsl"></v-radio>
                   <v-radio label="HLSL" value="hlsl"></v-radio>
@@ -118,14 +148,16 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12">
+              <v-col class="pt-1 mt-1">
                 <v-slider
                   v-model="tileSize"
                   label="Tile size"
                   thumb-label="always"
+                  thumb-size="26"
                   min="2"
                   max="64"
                   step="2"
+                  dense
                 ></v-slider>
               </v-col>
             </v-row>
@@ -135,11 +167,11 @@
     </v-navigation-drawer>
 
     <v-app-bar app color="primary" dark dense>
-      <v-toolbar-title>ComputeShaderVis</v-toolbar-title>
-      <v-spacer></v-spacer>
       <v-app-bar-nav-icon
         @click.stop="settingsDrawer = !settingsDrawer"
       ></v-app-bar-nav-icon>
+      <v-toolbar-title>ComputeShaderVis</v-toolbar-title>
+      <v-spacer></v-spacer>
     </v-app-bar>
 
     <v-main>
@@ -154,7 +186,7 @@
                   :attrs="attrs"
                 ></compute-shader-vis
               ></template>
-              <v-card>
+              <v-card tile>
                 <v-card-text>
                   <v-simple-table dense>
                     <template v-slot:default>
@@ -210,6 +242,7 @@ export default {
     this.localNumWorkGroups = { ...this.$store.getters.numWorkGroups };
     this.localWorkGroupSize = { ...this.$store.getters.workGroupSize };
     this.localImageSize = { ...this.$store.getters.imageSize };
+    this.localDesiredPPI = this.$store.getters.desiredPPI;
   },
 
   data() {
@@ -221,6 +254,7 @@ export default {
       localNumWorkGroups: null,
       localWorkGroupSize: null,
       localImageSize: null,
+      localDesiredPPI: 1,
 
       selectedShadingLang: "glsl",
       semantics: {

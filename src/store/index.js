@@ -8,12 +8,13 @@ export default new Vuex.Store({
 
   state: {
     originUpperLeft: true, // false = lower-left
-    tileSize: 16, // size of single invocation/thread, in pixels,
+    tileSize: 12, // size of single invocation/thread, in pixels,
 
-    numWorkGroups: { x: 3, y: 3, z: 1 },
+    numWorkGroups: { x: 5, y: 3, z: 1 },
     workGroupSize: { x: 16, y: 16, z: 1 },
 
-    imageSize: { x: 512, y: 512 },
+    imageSize: { x: 1280, y: 720 },
+    desiredPPI: 1,
   },
   mutations: {
     setOriginUpperLeft: (state) => (state.originUpperLeft = true),
@@ -29,6 +30,9 @@ export default new Vuex.Store({
 
     setImageSize(state, imageSize) {
       state.imageSize = { ...imageSize };
+    },
+    setDesiredPPI(state, value) {
+      state.desiredPPI = value;
     },
   },
   getters: {
@@ -49,14 +53,25 @@ export default new Vuex.Store({
     },
 
     imageSize: (state) => state.imageSize,
+    desiredPPI: (state) => state.desiredPPI,
+    /*
+    pixelsPerInvocation: (state) => {
+      const { numWorkGroups, workGroupSize, imageSize } = state;
+      return {
+        x: imageSize.x / (numWorkGroups.x * workGroupSize.x),
+        y: imageSize.y / (numWorkGroups.y * workGroupSize.y),
+      };
+    },
+    */
   },
   actions: {
-    dispatchCompute({ commit }, params) {
-      commit("setNumWorkGroups", params.localNumWorkGroups);
-      commit("setWorkGroupSize", params.localWorkGroupSize);
+    dispatchCompute({ commit }, payload) {
+      commit("setNumWorkGroups", payload.localNumWorkGroups);
+      commit("setWorkGroupSize", payload.localWorkGroupSize);
     },
-    adjustImage({ commit }, imageSize) {
-      commit("setImageSize", imageSize);
+    adjustImage({ commit }, payload) {
+      commit("setImageSize", payload.imageSize);
+      commit("setDesiredPPI", payload.desiredPPI);
     },
   },
 });

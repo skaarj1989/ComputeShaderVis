@@ -26,6 +26,7 @@ export default {
       "tileSize",
       "workGroupSize",
       "imageSize",
+      "desiredPPI",
     ]),
 
     position() {
@@ -36,14 +37,16 @@ export default {
       };
     },
     color() {
-      const { workGroupSize, imageSize, globalInvocationID } = this;
+      const { imageSize, desiredPPI, globalInvocationID } = this;
       const fits =
-        globalInvocationID.x * workGroupSize.x < imageSize.x &&
-        globalInvocationID.y * workGroupSize.y < imageSize.y;
+        globalInvocationID.x * desiredPPI < imageSize.x &&
+        globalInvocationID.y * desiredPPI < imageSize.y;
       return fits ? "fits" : "out-of-range";
     },
 
     invocationInfo() {
+      console.log(this.$parent);
+
       const { ID, localInvocationIndex, globalInvocationID } = this;
       return {
         localInvocationID: ID,
