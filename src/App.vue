@@ -1,184 +1,155 @@
 <template>
   <v-app>
+    <v-navigation-drawer app v-model="settingsDrawer" right>
+      <v-list>
+        <v-card flat>
+          <v-card-title>Dispatch</v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col class="pr-1 mr-0 pb-0 mb-0">
+                <v-text-field
+                  v-model.number="localNumWorkGroups.x"
+                  label="num_groups_x"
+                  outlined
+                  dense
+                ></v-text-field>
+              </v-col>
+              <v-col class="pl-1 ml-0 pb-0 mb-0">
+                <v-text-field
+                  v-model.number="localNumWorkGroups.y"
+                  label="num_groups_y"
+                  outlined
+                  dense
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="pr-1 mr-0 pt-0 mt-0">
+                <v-text-field
+                  v-model.number="localWorkGroupSize.x"
+                  label="local_size_x"
+                  outlined
+                  dense
+                ></v-text-field>
+              </v-col>
+              <v-col class="pl-1 ml-0 pt-0 mt-0">
+                <v-text-field
+                  v-model.number="localWorkGroupSize.y"
+                  label="local_size_y"
+                  outlined
+                  dense
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="pt-0 mt-0 text-right">
+                <v-btn
+                  color="primary"
+                  small
+                  depressed
+                  @click="
+                    $store.dispatch('dispatchCompute', {
+                      localNumWorkGroups,
+                      localWorkGroupSize,
+                    })
+                  "
+                  >dispatch</v-btn
+                >
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+        <v-divider />
+        <v-card flat>
+          <v-card-title>Image</v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col class="pr-1 mr-0 pb-0 mb-0">
+                <v-text-field
+                  v-model.number="localImageSize.x"
+                  label="width"
+                  outlined
+                  dense
+                ></v-text-field>
+              </v-col>
+              <v-col class="pl-1 ml-0 pb-0 mb-0">
+                <v-text-field
+                  v-model.number="localImageSize.y"
+                  label="height"
+                  outlined
+                  dense
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="pt-0 mt-0 text-right">
+                <v-btn
+                  color="primary"
+                  small
+                  depressed
+                  @click="$store.dispatch('adjustImage', localImageSize)"
+                >
+                  adjust
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+        <v-divider />
+        <v-card flat>
+          <v-card-text>
+            <v-row>
+              <v-col class="pt-0 mt-0 pb-0 mb-0">
+                <v-radio-group v-model="originUpperLeft" label="Origin">
+                  <v-radio label="Upper-left" :value="true"></v-radio>
+                  <v-radio label="Lower-left" :value="false"></v-radio>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-radio-group
+                  v-model="selectedShadingLang"
+                  label="Shading language"
+                >
+                  <v-radio label="GLSL" value="glsl"></v-radio>
+                  <v-radio label="HLSL" value="hlsl"></v-radio>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                <v-slider
+                  v-model="tileSize"
+                  label="Tile size"
+                  thumb-label="always"
+                  min="2"
+                  max="64"
+                  step="2"
+                ></v-slider>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-list>
+    </v-navigation-drawer>
+
     <v-app-bar app color="primary" dark dense>
-      <v-menu bottom left offset-y>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn dark icon v-bind="attrs" v-on="on">
-            <v-icon>mdi-dots-vertical</v-icon>
-          </v-btn>
-        </template>
-
-        <v-list>
-          <!-- Dispatch compute: -->
-
-          <v-menu :close-on-content-click="false" offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-list-item v-bind="attrs" v-on="on">
-                <v-list-item-icon class="mr-3">
-                  <v-icon>calculate</v-icon>
-                </v-list-item-icon>
-                <v-list-item-title>Dispatch</v-list-item-title>
-              </v-list-item>
-            </template>
-            <v-card max-width="300">
-              <v-card-title>DispatchCompute</v-card-title>
-              <v-divider />
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12">
-                    <v-row>
-                      <v-col class="pr-1 mr-0 pb-0 mb-0">
-                        <v-text-field
-                          v-model.number="localNumWorkGroups.x"
-                          label="num_groups_x"
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                      <v-col class="pl-1 ml-0 pb-0 mb-0">
-                        <v-text-field
-                          v-model.number="localNumWorkGroups.y"
-                          label="num_groups_y"
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col class="pr-1 mr-0 pt-0 mt-0">
-                        <v-text-field
-                          v-model.number="localWorkGroupSize.x"
-                          label="local_size_x"
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                      <v-col class="pl-1 ml-0 pt-0 mt-0">
-                        <v-text-field
-                          v-model.number="localWorkGroupSize.y"
-                          label="local_size_y"
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col class="pt-0 mt-0">
-                    <v-btn
-                      @click="
-                        $store.dispatch('dispatchCompute', {
-                          localNumWorkGroups,
-                          localWorkGroupSize,
-                        })
-                      "
-                      >dispatch</v-btn
-                    >
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
-          </v-menu>
-
-          <!-- Image settings: -->
-
-          <v-menu :close-on-content-click="false" offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-list-item v-bind="attrs" v-on="on">
-                <v-list-item-icon class="mr-3">
-                  <v-icon>aspect_ratio</v-icon>
-                </v-list-item-icon>
-                <v-list-item-title>Image</v-list-item-title>
-              </v-list-item>
-            </template>
-            <v-card max-width="300">
-              <v-card-title>Image</v-card-title>
-              <v-divider />
-              <v-card-text>
-                <v-row>
-                  <v-col class="pr-1 mr-0 pb-0 mb-0">
-                    <v-text-field
-                      v-model.number="localImageSize.x"
-                      label="image_width"
-                      outlined
-                      dense
-                    ></v-text-field>
-                  </v-col>
-                  <v-col class="pl-1 ml-0 pb-0 mb-0">
-                    <v-text-field
-                      v-model.number="localImageSize.y"
-                      label="image_height"
-                      outlined
-                      dense
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col class="pt-0 mt-0">
-                    <v-btn
-                      @click="$store.dispatch('adjustImage', localImageSize)"
-                    >
-                      adjust
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
-          </v-menu>
-
-          <!-- Other settings: -->
-
-          <v-menu :close-on-content-click="false" offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-list-item v-bind="attrs" v-on="on">
-                <v-list-item-icon class="mr-3">
-                  <v-icon>settings</v-icon>
-                </v-list-item-icon>
-                <v-list-item-title>Settings</v-list-item-title>
-              </v-list-item>
-            </template>
-            <v-card min-width="300">
-              <v-card-title>Settings</v-card-title>
-              <v-divider />
-              <v-card-text>
-                <v-row>
-                  <v-col class="pt-0 mt-0 pb-0 mb-0">
-                    <v-radio-group v-model="originUpperLeft" label="origin">
-                      <v-radio label="upperLeft" :value="true"></v-radio>
-                      <v-radio label="lowerLeft" :value="false"></v-radio>
-                    </v-radio-group>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12">
-                    <v-slider
-                      v-model="tileSize"
-                      label="tileSize"
-                      thumb-label="always"
-                      min="2"
-                      max="64"
-                      step="2"
-                    ></v-slider>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
-          </v-menu>
-        </v-list>
-      </v-menu>
       <v-toolbar-title>ComputeShaderVis</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-app-bar-nav-icon
+        @click.stop="settingsDrawer = !settingsDrawer"
+      ></v-app-bar-nav-icon>
     </v-app-bar>
 
     <v-main>
       <v-container fluid>
-        <v-card>
-          <v-card-text class="justify-center">
+        <v-card class="scroll">
+          <v-card-text>
             <v-menu absolute open-on-click>
               <template v-slot:activator="{ on, attrs }">
                 <compute-shader-vis
-                  @select="(evt) => (selectedItem = evt)"
+                  @select="(itemInfo) => (selectedItem = itemInfo)"
                   :listener="on"
                   :attrs="attrs"
                 ></compute-shader-vis
@@ -189,28 +160,30 @@
                     <template v-slot:default>
                       <thead>
                         <tr>
-                          <th>GLSL</th>
-                          <th>HLSL</th>
+                          <th>{{ selectedShadingLang }}</th>
                           <th>value</th>
                         </tr>
                       </thead>
                       <tbody>
+                        <!--
                         <tr>
-                          <td>{{ semantics.numWorkGroups.glsl }}</td>
-                          <td>{{ semantics.numWorkGroups.hlsl }}</td>
+                          <td>
+                            {{ semantics.numWorkGroups[selectedShadingLang] }}
+                          </td>
                           <td>{{ $store.getters.numWorkGroups }}</td>
                         </tr>
                         <tr>
-                          <td>{{ semantics.workGroupSize.glsl }}</td>
-                          <td>{{ semantics.workGroupSize.hlsl }}</td>
+                          <td>
+                            {{ semantics.workGroupSize[selectedShadingLang] }}
+                          </td>
                           <td>{{ $store.getters.workGroupSize }}</td>
                         </tr>
+                        -->
                         <tr
                           v-for="(value, key) in selectedItem"
                           :key="`prop-${key}`"
                         >
-                          <td>{{ semantics[key].glsl }}</td>
-                          <td>{{ semantics[key].hlsl }}</td>
+                          <td>{{ semantics[key][selectedShadingLang] }}</td>
                           <td>{{ value }}</td>
                         </tr>
                       </tbody>
@@ -241,13 +214,15 @@ export default {
 
   data() {
     return {
-      selectedItem: null,
+      settingsDrawer: true,
+
+      selectedItem: null, // workgroup & invocation info
 
       localNumWorkGroups: null,
       localWorkGroupSize: null,
-
       localImageSize: null,
 
+      selectedShadingLang: "glsl",
       semantics: {
         numWorkGroups: {
           glsl: "gl_NumWorkGroups",
@@ -304,3 +279,12 @@ export default {
   },
 };
 </script>
+
+<style>
+html {
+  overflow-y: auto !important;
+}
+.scroll {
+  overflow: auto;
+}
+</style>

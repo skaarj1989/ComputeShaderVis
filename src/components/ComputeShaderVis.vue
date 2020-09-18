@@ -14,23 +14,22 @@
         orient="auto"
         markerUnits="strokeWidth"
       >
-        <polygon points="0 0, 8 2.5, 0 5" fill="black" />
+        <polygon points="0 0, 8 2.5, 0 5" fill="rgb(0, 0, 0)" />
       </marker>
     </defs>
     <g transform="translate(10, 10)">
-      <!-- upper arrow -->
+      <!-- upper arrow (width) -->
       <text x="17" y="0">image width: {{ imageSize.x }}</text>
       <line
         x1="17"
         y1="8"
         :x2="graphWidth"
         y2="8"
-        stroke="#000"
+        stroke="rgb(0, 0, 0)"
         stroke-width="2"
         marker-end="url(#endarrow)"
       />
-
-      <!-- left arrow: -->
+      <!-- left arrow (height) -->
       <text
         x="0"
         y="0"
@@ -47,14 +46,13 @@
         :y1="originUpperLeft ? 17 : graphHeight"
         x2="8"
         :y2="originUpperLeft ? graphHeight : 27"
-        stroke="#000"
+        stroke="rgb(0, 0, 0)"
         stroke-width="2"
         marker-end="url(#endarrow)"
       />
     </g>
-
     <!-- workgroups: -->
-    <g transform="translate(20, 20)" v-on="listener" v-bind="attrs">
+    <g v-on="listener" v-bind="attrs" transform="translate(20, 20)">
       <template v-for="(n, y) in numWorkGroups.y">
         <template v-for="(m, x) in numWorkGroups.x">
           <work-group
@@ -80,7 +78,6 @@ export default {
   computed: {
     ...mapGetters([
       "originUpperLeft",
-      "originLowerLeft",
       "tileSize",
       "numWorkGroups",
       "workGroupSize",

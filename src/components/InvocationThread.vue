@@ -1,13 +1,13 @@
-<template>
+<template v-ripple>
   <rect
     @click="(evt) => $emit('click', invocationInfo)"
+    :class="color"
     :x="position.x"
     :y="position.y"
     rx="2"
     ry="2"
     :width="tileSize"
     :height="tileSize"
-    :class="color"
   />
 </template>
 
@@ -40,7 +40,6 @@ export default {
       const fits =
         globalInvocationID.x * workGroupSize.x < imageSize.x &&
         globalInvocationID.y * workGroupSize.y < imageSize.y;
-
       return fits ? "fits" : "out-of-range";
     },
 

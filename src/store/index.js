@@ -8,12 +8,12 @@ export default new Vuex.Store({
 
   state: {
     originUpperLeft: true, // false = lower-left
-    tileSize: 16, // size of single invocation, in pixels,
+    tileSize: 16, // size of single invocation/thread, in pixels,
 
-    numWorkGroups: { x: 5, y: 3, z: 1 },
+    numWorkGroups: { x: 3, y: 3, z: 1 },
     workGroupSize: { x: 16, y: 16, z: 1 },
 
-    imageSize: { x: 1280, y: 720 },
+    imageSize: { x: 512, y: 512 },
   },
   mutations: {
     setOriginUpperLeft: (state) => (state.originUpperLeft = true),

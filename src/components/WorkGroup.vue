@@ -1,9 +1,12 @@
 <template>
-  <g :transform="translate" class="tiles">
+  <g class="workgroup" :transform="translate">
     <template v-for="(n, y) in workGroupSize.y">
       <template v-for="(m, x) in workGroupSize.x">
         <invocation-thread
-          @click="(evt) => $emit('click', { ...workGroupInfo, ...evt })"
+          @click="
+            (invocationThreadInfo) =>
+              $emit('click', { ...workGroupInfo, ...invocationThreadInfo })
+          "
           :key="`invocation-${x}-${y}`"
           :i-d="{ x, y, z: 0 }"
         />
@@ -73,7 +76,7 @@ export default {
 </script>
 
 <style>
-g .tiles :hover {
+g .workgroup :hover {
   fill-opacity: 1;
 }
 </style>
