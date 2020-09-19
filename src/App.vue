@@ -1,8 +1,13 @@
 <template>
   <v-app>
-    <v-navigation-drawer app v-model="settingsDrawer" left>
+    <v-navigation-drawer
+      v-model="settingsDrawer"
+      color="grey lighten-5"
+      app
+      left
+    >
       <v-list>
-        <v-card flat>
+        <v-card flat color="transparent">
           <v-card-title>Dispatch</v-card-title>
           <v-card-text>
             <v-row>
@@ -44,23 +49,24 @@
             <v-row>
               <v-col class="pt-0 mt-0 pb-0 mb-0 text-right">
                 <v-btn
-                  color="primary"
-                  small
-                  depressed
                   @click="
                     $store.dispatch('dispatchCompute', {
                       localNumWorkGroups,
                       localWorkGroupSize,
                     })
                   "
-                  >dispatch</v-btn
+                  color="primary"
+                  small
+                  depressed
                 >
+                  dispatch
+                </v-btn>
               </v-col>
             </v-row>
           </v-card-text>
         </v-card>
         <v-divider />
-        <v-card flat>
+        <v-card flat color="transparent">
           <v-card-title>Image</v-card-title>
           <v-card-text>
             <v-row>
@@ -83,23 +89,9 @@
             </v-row>
             <v-row>
               <v-col cols="8" class="pt-0 mt-0 pb-0 mb-0">
-                <!--
-                <v-slider
-                  dense
-                  v-model.number="desiredPPI"
-                  label="PPI"
-                  hint="pixels per invocation"
-                  persistent-hint
-                  thumb-label
-                  thumb-size="26"
-                  :min="1"
-                  :step="1"
-                ></v-slider>
-                -->
                 <v-text-field
                   v-model.number="localDesiredPPI"
-                  label="PPI"
-                  hint="pixels per invocation"
+                  label="pixels per invocation"
                   outlined
                   dense
                 ></v-text-field>
@@ -108,15 +100,15 @@
             <v-row>
               <v-col class="pt-0 mt-0 pb-0 mb-0 text-right">
                 <v-btn
-                  color="primary"
-                  small
-                  depressed
                   @click="
                     $store.dispatch('adjustImage', {
                       imageSize: localImageSize,
                       desiredPPI: localDesiredPPI,
                     })
                   "
+                  color="primary"
+                  small
+                  depressed
                 >
                   adjust
                 </v-btn>
@@ -125,7 +117,7 @@
           </v-card-text>
         </v-card>
         <v-divider />
-        <v-card flat>
+        <v-card flat color="transparent">
           <v-card-text>
             <v-row>
               <v-col class="pt-0 mt-0 pb-0 mb-0">
@@ -150,7 +142,7 @@
             <v-row>
               <v-col class="pt-1 mt-1">
                 <v-slider
-                  v-model="tileSize"
+                  v-model.number="tileSize"
                   label="Tile size"
                   thumb-label="always"
                   thumb-size="26"
@@ -166,7 +158,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="primary" dark dense>
+    <v-app-bar app dark color="primary" dense>
       <v-app-bar-nav-icon
         @click.stop="settingsDrawer = !settingsDrawer"
       ></v-app-bar-nav-icon>
@@ -178,7 +170,7 @@
       <v-container fluid>
         <v-card class="scroll">
           <v-card-text>
-            <v-menu absolute open-on-click>
+            <v-menu absolute open-on-click :close-on-content-click="false">
               <template v-slot:activator="{ on, attrs }">
                 <compute-shader-vis
                   @select="(itemInfo) => (selectedItem = itemInfo)"
@@ -197,26 +189,34 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <!--
-                        <tr>
-                          <td>
-                            {{ semantics.numWorkGroups[selectedShadingLang] }}
-                          </td>
-                          <td>{{ $store.getters.numWorkGroups }}</td>
-                        </tr>
-                        <tr>
-                          <td>
-                            {{ semantics.workGroupSize[selectedShadingLang] }}
-                          </td>
-                          <td>{{ $store.getters.workGroupSize }}</td>
-                        </tr>
-                        -->
                         <tr
-                          v-for="(value, key) in selectedItem"
-                          :key="`prop-${key}`"
+                          v-for="(infoValue, infoKey) in selectedItem"
+                          :key="`prop-${infoKey}`"
                         >
-                          <td>{{ semantics[key][selectedShadingLang] }}</td>
-                          <td>{{ value }}</td>
+                          <td>{{ semantics[infoKey][selectedShadingLang] }}</td>
+                          <td>
+                            <template v-if="typeof infoValue == 'object'">
+                              <v-chip
+                                v-for="(propValue, propKey) in infoValue"
+                                :key="propKey"
+                                :color="`${axesColors[propKey]} lighten-1`"
+                                text-color="white"
+                                small
+                                label
+                              >
+                                <span class="font-weight-bold"
+                                  >{{ propKey }}={{ propValue }}</span
+                                >
+                              </v-chip>
+                            </template>
+                            <template v-else>
+                              <v-chip small label>
+                                <span class="font-weight-bold">
+                                  {{ infoValue }}
+                                </span>
+                              </v-chip>
+                            </template>
+                          </td>
                         </tr>
                       </tbody>
                     </template>
@@ -239,10 +239,17 @@ export default {
   components: { ComputeShaderVis },
 
   beforeMount() {
-    this.localNumWorkGroups = { ...this.$store.getters.numWorkGroups };
-    this.localWorkGroupSize = { ...this.$store.getters.workGroupSize };
-    this.localImageSize = { ...this.$store.getters.imageSize };
-    this.localDesiredPPI = this.$store.getters.desiredPPI;
+    const {
+      numWorkGroups,
+      workGroupSize,
+      imageSize,
+      desiredPPI,
+    } = this.$store.getters;
+
+    this.localNumWorkGroups = { ...numWorkGroups };
+    this.localWorkGroupSize = { ...workGroupSize };
+    this.localImageSize = { ...imageSize };
+    this.localDesiredPPI = desiredPPI;
   },
 
   data() {
@@ -289,6 +296,7 @@ export default {
           description: "",
         },
       },
+      axesColors: { x: "red", y: "green", z: "blue" },
     };
   },
   computed: {

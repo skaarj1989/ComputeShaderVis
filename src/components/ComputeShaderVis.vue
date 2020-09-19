@@ -20,15 +20,8 @@
     <g transform="translate(10, 10)">
       <!-- upper arrow (width) -->
       <text x="17" y="0">image width: {{ imageSize.x }}</text>
-      <line
-        x1="17"
-        y1="8"
-        :x2="graphWidth"
-        y2="8"
-        stroke="rgb(0, 0, 0)"
-        stroke-width="2"
-        marker-end="url(#endarrow)"
-      />
+      <line x1="17" y1="8" :x2="graphWidth" y2="8" />
+
       <!-- left arrow (height) -->
       <text
         x="0"
@@ -46,17 +39,15 @@
         :y1="originUpperLeft ? 17 : graphHeight"
         x2="8"
         :y2="originUpperLeft ? graphHeight : 27"
-        stroke="rgb(0, 0, 0)"
-        stroke-width="2"
-        marker-end="url(#endarrow)"
       />
     </g>
+
     <!-- workgroups: -->
     <g v-on="listener" v-bind="attrs" transform="translate(20, 20)">
       <template v-for="(n, y) in numWorkGroups.y">
         <template v-for="(m, x) in numWorkGroups.x">
           <work-group
-            @click="(evt) => $emit('select', evt)"
+            @click="(itemInfo) => $emit('select', itemInfo)"
             :key="`work-group-${x}-${y}`"
             :i-d="{ x, y, z: 0 }"
           />
@@ -115,5 +106,10 @@ export default {
 svg {
   border-style: solid;
   border-width: 0px;
+}
+line {
+  stroke: rgb(0, 0, 0);
+  stroke-width: 2;
+  marker-end: url(#endarrow);
 }
 </style>

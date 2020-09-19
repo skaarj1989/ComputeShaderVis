@@ -1,11 +1,11 @@
-<template v-ripple>
+<template>
   <rect
-    @click="(evt) => $emit('click', invocationInfo)"
+    @click="$emit('click', invocationInfo)"
     :class="color"
     :x="position.x"
     :y="position.y"
-    rx="2"
-    ry="2"
+    rx="1"
+    ry="1"
     :width="tileSize"
     :height="tileSize"
   />
@@ -45,8 +45,6 @@ export default {
     },
 
     invocationInfo() {
-      console.log(this.$parent);
-
       const { ID, localInvocationIndex, globalInvocationID } = this;
       return {
         localInvocationID: ID,
@@ -76,9 +74,9 @@ export default {
 
 <style>
 rect {
-  fill-opacity: 0.6;
   stroke: rgb(34, 34, 34);
   stroke-width: 1;
+  fill-opacity: 0.6;
 }
 .fits {
   fill: rgb(64, 224, 64);

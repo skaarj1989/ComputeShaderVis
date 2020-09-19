@@ -14,7 +14,7 @@ export default new Vuex.Store({
     workGroupSize: { x: 16, y: 16, z: 1 },
 
     imageSize: { x: 1280, y: 720 },
-    desiredPPI: 1,
+    desiredPPI: 16,
   },
   mutations: {
     setOriginUpperLeft: (state) => (state.originUpperLeft = true),
@@ -54,6 +54,7 @@ export default new Vuex.Store({
 
     imageSize: (state) => state.imageSize,
     desiredPPI: (state) => state.desiredPPI,
+
     /*
     pixelsPerInvocation: (state) => {
       const { numWorkGroups, workGroupSize, imageSize } = state;
